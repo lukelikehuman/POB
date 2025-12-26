@@ -2,7 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Recommendation } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Explicitly cast process to any if needed, but @types/node should handle it
+const apiKey = (process.env as any).API_KEY;
+const ai = new GoogleGenAI({ apiKey });
 
 export async function getAIFlavorRecommendation(userInput: string): Promise<Recommendation> {
   const response = await ai.models.generateContent({
@@ -24,8 +26,9 @@ export async function getAIFlavorRecommendation(userInput: string): Promise<Reco
     }
   });
 
+  const text = response.text || "";
   try {
-    return JSON.parse(response.text.trim()) as Recommendation;
+    return JSON.parse(text.trim()) as Recommendation;
   } catch (error) {
     console.error("Failed to parse Gemini response", error);
     return {
