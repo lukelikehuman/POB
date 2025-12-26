@@ -1,0 +1,8 @@
+{
+  "name": "貓廚小火鍋 Cat Cook Hotpot",
+  "description": "貓廚小火鍋官方銷售網頁 - 提供溫暖人心的美味個人火鍋，搭配最可愛的貓咪主題氛圍。",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
