@@ -1,12 +1,17 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { Recommendation } from "../types";
 
-// Explicitly cast process to any if needed, but @types/node should handle it
-const apiKey = (process.env as any).API_KEY;
-const ai = new GoogleGenAI({ apiKey });
+// 明確宣告 process 以解決 TS2580 錯誤，Vite 會在構建時替換 process.env.API_KEY
+declare const process: {
+  env: {
+    API_KEY: string;
+  };
+};
 
 export async function getAIFlavorRecommendation(userInput: string): Promise<Recommendation> {
+  // 遵循指導方針，在調用前初始化實例
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `根據使用者的心情或偏好：「${userInput}」，請從「貓廚小火鍋」的菜單（原味、麻辣、牛奶起司、酸菜白肉）中推薦一款鍋物。
@@ -26,6 +31,7 @@ export async function getAIFlavorRecommendation(userInput: string): Promise<Reco
     }
   });
 
+  // 確保 text 不是 undefined 以符合 TS 嚴格檢查
   const text = response.text || "";
   try {
     return JSON.parse(text.trim()) as Recommendation;
